@@ -56,3 +56,12 @@ precision = 0.5581395348837209
 recall = 0.7058823529411765
 Score  = 623376.6233766234
 ```
+* simple-vote k=4, Union: 817372.59 (this is pretty good)
+```
+tp = 29
+fp = 18
+fn = 5
+precision = 0.6170212765957447
+recall = 0.8529411764705882
+Score  = 716049.3827160493
+```
