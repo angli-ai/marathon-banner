@@ -1,5 +1,6 @@
 
 # Results
+
 ## 1. use `ncbi_train_bioc.xml`
 * Union: 801630.83
 * LeftToRight: 801630.83
@@ -11,11 +12,12 @@ precision = 0.6153846153846154
 recall = 0.7058823529411765
 Score  = 657534.2465753424
 ```
+
 ## 2. use `ncbitrain_e11_bioc.xml`
 * simple-vote k=6, Union: bad
 * simple-vote k=6, LeftToRight: bad, but better than Union
 
-## 4. use `newpubmed_e12_13_bioc.xml`
+## 3. use `newpubmed_e12_13_bioc.xml`
 * simple-vote k=6, LeftToRight:
 ```
 tp = 18
@@ -33,4 +35,15 @@ fn = 11
 precision = 0.5476190476190477
 recall = 0.6764705882352942
 Score  = 605263.157894737
+```
+
+## 4. combine `newpubmed_e12_13_bioc.xml` with `ncbi_train_bioc.xml`
+* simple-vote k=16, Union: 687718.81 
+```
+tp = 16
+fp = 7
+fn = 18
+precision = 0.6956521739130435
+recall = 0.47058823529411764
+Score  = 561403.5087719297
 ```
