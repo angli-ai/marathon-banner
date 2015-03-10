@@ -38,7 +38,7 @@ Score  = 605263.157894737
 ```
 
 ## 4. combine `newpubmed_e12_13_bioc.xml` with `ncbi_train_bioc.xml`
-* simple-vote k=16, Union: 687718.81 
+* simple-vote k=15, Union: 687718.81 
 ```
 tp = 16
 fp = 7
@@ -46,4 +46,13 @@ fn = 18
 precision = 0.6956521739130435
 recall = 0.47058823529411764
 Score  = 561403.5087719297
+```
+* simple-vote k=16, Union: 796368.39
+```
+tp = 24
+fp = 19
+fn = 10
+precision = 0.5581395348837209
+recall = 0.7058823529411765
+Score  = 623376.6233766234
 ```
