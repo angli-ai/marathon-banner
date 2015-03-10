@@ -362,6 +362,62 @@ public class Sentence
 					labels.add(label.toString());
 				}
 			}
+		} else if (sameType.equals(OverlapOption.LeftToRight))
+		{
+			if (!differentType.equals(OverlapOption.Exception))
+				throw new IllegalArgumentException("Not implemented");
+			Sentence union = copy(true, true);
+			Set<Mention> handledMentions = new HashSet<Mention>();
+			Set<Mention> unhandledMentions = new HashSet<Mention>(union.mentions);
+			while (unhandledMentions.size() > 0)
+			{
+				// Get an unhandled mention
+				Mention mention = unhandledMentions.iterator().next();
+				handledMentions.add(mention);
+				if (mentionTypes.contains(mention.getMentionType()))
+				{
+					// Get all overlapping mentions with the same entity type
+					// Set<Mention> overlapping = new HashSet<Mention>(); // removed: set does not record duplicate objects
+					List<Mention> overlapping = new ArrayList<Mention>();
+					// overlapping.add(mention);
+					for (Mention mention2 : union.mentions)
+						if (mention.overlaps(mention2) && mention.getEntityType().equals(mention2.getEntityType()))
+							overlapping.add(mention2);
+					// Handle overlaps
+					if (overlapping.size() > 1)
+					{
+						// TODO Does not handle probability
+						int start = Integer.MAX_VALUE;
+						int end = Integer.MIN_VALUE;
+						for (Mention mention2 : overlapping)
+						{
+							if (start > mention2.getStart()) {
+								start = mention2.getStart();
+								end = mention2.getEnd();
+							}
+							union.removeMention(mention2);
+						}
+						union.addMention(new Mention(union, start, end, mention.getEntityType(), mention.getMentionType()));
+						// System.out.println("overlapping size [" + overlapping.size() + "] : " + overlapping);
+						// System.out.println("union.mentions [" + union.mentions.size() + "] = " + union.mentions);
+					}
+				}
+				// Get list of unhandled mentions
+				unhandledMentions = new HashSet<Mention>(union.getMentions());
+				unhandledMentions.removeAll(handledMentions);
+			}
+			// System.out.println(tokens);
+			for (int i = 0; i < tokens.size(); i++)
+			{
+				List<Mention> tokenMentions = union.getMentions(union.tokens.get(i), mentionTypes);
+				// System.out.println(union.tokens.get(i) + " [tokenMentions (" + tokenMentions.size() + ")] : " + tokenMentions);
+				if (tokenMentions.size() == 0)
+					labels.add(TagPosition.O.name());
+				else if (tokenMentions.size() == 1)
+					labels.add(TagPosition.getPositionText(format, tokenMentions.get(0), i));
+				else
+					throw new IllegalArgumentException("LeftToRight: Sentence " + sentenceId + " contains overlapping mentions");
+			}
 		}
 		else
 		{
