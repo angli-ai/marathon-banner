@@ -3,6 +3,7 @@
 ## 1. use `ncbi_train_bioc.xml`
 * Union: 801630.83
 * LeftToRight: 801630.83
+
 	tp = 24
 	fp = 15
 	fn = 10
@@ -16,13 +17,16 @@
 
 ## 4. use `newpubmed_e12_13_bioc.xml`
 * simple-vote k=6, LeftToRight:
+
 	tp = 18
 	fp = 17
 	fn = 16
 	precision = 0.5142857142857142
 	recall = 0.5294117647058824
 	Score  = 521739.1304347826
+
 * simple-vote k=4, Union: 778358.61
+
 	tp = 23
 	fp = 19
 	fn = 11
