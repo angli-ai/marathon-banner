@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<banner-configuration>
+  <banner>
+    <eval>
+      <datasetName>banner.eval.dataset.BioCTurkerDataset</datasetName>
+      <dataset>
+		  <filename>data/combined_4.xml</filename>
+        <foldType>Disease</foldType>
+      </dataset>
+	  <idInputFilename>output/combine4/raw/ids.txt</idInputFilename>
+	  <rawInputFilename>output/combine4/raw/raw.txt</rawInputFilename>
+	  <trainingInputFilename>output/combine4/raw/train.txt</trainingInputFilename>
+	  <outputFilename>output/combine4/raw/output.txt</outputFilename>
+	  <inContextAnalysisFilename>output/combine4/raw/contextAnalysis.html</inContextAnalysisFilename>
+	  <mentionFilename>output/combine4/raw/mention.txt</mentionFilename>
+	  <modelFilename>output/combine4/raw/model_bioc_TRAIN.bin</modelFilename>
+      <lemmatiserDataDirectory>nlpdata/lemmatiser</lemmatiserDataDirectory>
+      <posTaggerDataDirectory>nlpdata/tagger</posTaggerDataDirectory>
+      <posTagger>dragon.nlp.tool.HeppleTagger</posTagger>
+      <tokenizer>banner.tokenization.SimpleTokenizer</tokenizer>
+      <useParenthesisPostProcessing>true</useParenthesisPostProcessing>
+      <useLocalAbbreviationPostProcessing>true</useLocalAbbreviationPostProcessing>
+      <useNumericNormalization>true</useNumericNormalization>
+      <tagFormat>IOB</tagFormat>
+      <crfOrder>1</crfOrder>
+      <textDirection>Forward</textDirection>
+      <mentionTypes>Required</mentionTypes>
+      <sameTypeOverlapOption>Raw</sameTypeOverlapOption>
+      <differentTypeOverlapOption>Raw</differentTypeOverlapOption>
+    </eval>
+  </banner>
+</banner-configuration>
