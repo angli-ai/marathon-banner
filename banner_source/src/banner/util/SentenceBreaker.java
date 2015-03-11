@@ -58,7 +58,7 @@ public class SentenceBreaker {
 
 	public static void main(String[] args) {
 		SentenceBreaker sb = new SentenceBreaker();
-		sb.setText("This is short. Testing (A. B. C. E.) also. And another.");
+		sb.setText("This is short. I am Dodge. Dr. Peterson is a bad guy. Testing (A. B. C. E.) also. And another.");
 		for (String sentence : sb.getSentences())
 			System.out.println(sentence);
 	}

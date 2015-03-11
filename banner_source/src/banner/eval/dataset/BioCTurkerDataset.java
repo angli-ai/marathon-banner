@@ -14,7 +14,7 @@ import banner.types.EntityType;
 import banner.types.Mention;
 import banner.types.Sentence;
 import banner.types.Mention.MentionType;
-import banner.util.SentenceBreaker;
+import banner.util.TurkSentenceBreaker;
 import bioc.BioCAnnotation;
 import bioc.BioCDocument;
 import bioc.BioCLocation;
@@ -23,10 +23,10 @@ import bioc.io.woodstox.ConnectorWoodstox;
 
 public class BioCTurkerDataset extends Dataset {
 
-	private SentenceBreaker breaker;
+	private TurkSentenceBreaker breaker;
 
 	public BioCTurkerDataset() {
-		breaker = new SentenceBreaker();
+		breaker = new TurkSentenceBreaker();
 	}
 
 	@Override
@@ -106,7 +106,10 @@ public class BioCTurkerDataset extends Dataset {
 					} else {
 						int beginOffset = annotationOffset - sentenceOffset;
 						if (beginOffset + length > sentenceText.length()) {
+                            System.out.println("[sentence.breaker] annotation id = " + annotationId + ", annotation text: " + text);
+                            System.out.println("[sentence.breaker] sentenceText = " + sentenceText);
 							// skip this annotation
+
 							System.out.println("annotation removed due to two sentence spanning.");
 							annotationIterator.remove();
 							break;
