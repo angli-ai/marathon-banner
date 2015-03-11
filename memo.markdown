@@ -38,7 +38,7 @@ Score  = 605263.157894737
 ```
 
 ## 4. combine `newpubmed_e12_13_bioc.xml` with `ncbi_train_bioc.xml`
-* simple-vote k=15, Union: 687718.81 
+* simple-vote k=15, Union: 687718.81  (current best precision, might be useful later)
 ```
 tp = 16
 fp = 7
@@ -55,6 +55,24 @@ fn = 10
 precision = 0.5581395348837209
 recall = 0.7058823529411765
 Score  = 623376.6233766234
+```
+* simple-vote k=2, Union
+```
+tp = 24
+fp = 23
+fn = 10
+precision = 0.5106382978723404
+recall = 0.7058823529411765
+Score  = 592592.5925925926
+```
+* simple-vote k=3, Union:
+```
+tp = 27
+fp = 21
+fn = 7
+precision = 0.5625
+recall = 0.7941176470588235
+Score  = 658536.5853658537
 ```
 * simple-vote k=4, Union: 817372.59 (this is pretty good)
 ```
@@ -73,4 +91,22 @@ fn = 8
 precision = 0.5777777777777777
 recall = 0.7647058823529411
 Score  = 658227.8481012657
+```
+* simple-vote k=5, Union:
+```
+tp = 26
+fp = 20
+fn = 8
+precision = 0.5652173913043478
+recall = 0.7647058823529411
+Score  = 650000.0
+```
+* simple-vote k=6, Union: (same as k=5, need to check)
+```
+tp = 26
+fp = 20
+fn = 8
+precision = 0.5652173913043478
+recall = 0.7647058823529411
+Score  = 650000.0
 ```
