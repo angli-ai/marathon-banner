@@ -20,7 +20,7 @@ fi
 maxmem=6g
 if [ $tasktype == "train" ]; then
 	if [ $# -lt 2 ]; then
-		echo "configfile missing for testing"
+		echo "configfile missing for training"
 		exit
 	fi
 	echo "training"
