@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<banner-configuration>
+  <banner>
+    <eval>
+      <datasetName>banner.eval.dataset.BioCTurkerDataset</datasetName>
+      <dataset>
+		  <filename>data/newpubmed_4.xml</filename>
+        <foldType>Disease</foldType>
+      </dataset>
+      <idInputFilename>output/newpubmed4/union-stanfordtoken/ids.txt</idInputFilename>
+      <rawInputFilename>output/newpubmed4/union-stanfordtoken/raw.txt</rawInputFilename>
+      <trainingInputFilename>output/newpubmed4/union-stanfordtoken/train.txt</trainingInputFilename>
+      <outputFilename>output/newpubmed4/union-stanfordtoken/output.txt</outputFilename>
+      <inContextAnalysisFilename>output/newpubmed4/union-stanfordtoken/contextAnalysis.html</inContextAnalysisFilename>
+      <mentionFilename>output/newpubmed4/union-stanfordtoken/mention.txt</mentionFilename>
+      <modelFilename>output/newpubmed4/union-stanfordtoken/model_bioc_TRAIN.bin</modelFilename>
+      <lemmatiserDataDirectory>nlpdata/lemmatiser</lemmatiserDataDirectory>
+      <posTaggerDataDirectory>nlpdata/tagger</posTaggerDataDirectory>
+      <posTagger>dragon.nlp.tool.HeppleTagger</posTagger>
+      <tokenizer>banner.tokenization.StanfordTokenizer</tokenizer>
+      <useParenthesisPostProcessing>true</useParenthesisPostProcessing>
+      <useLocalAbbreviationPostProcessing>true</useLocalAbbreviationPostProcessing>
+      <useNumericNormalization>true</useNumericNormalization>
+      <tagFormat>IOB</tagFormat>
+      <crfOrder>1</crfOrder>
+      <textDirection>Forward</textDirection>
+      <mentionTypes>Required</mentionTypes>
+      <sameTypeOverlapOption>Union</sameTypeOverlapOption>
+      <differentTypeOverlapOption>Exception</differentTypeOverlapOption>
+    </eval>
+  </banner>
+</banner-configuration>
