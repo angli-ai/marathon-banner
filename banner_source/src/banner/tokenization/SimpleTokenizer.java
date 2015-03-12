@@ -6,6 +6,7 @@
 
 package banner.tokenization;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,5 +96,12 @@ public class SimpleTokenizer implements Tokenizer
 		if (start < text.length())
 			tokens.add(text.substring(start, text.length()));
 		return tokens;
+	}
+
+	public static void main(String[] args) throws IOException {
+		String arg = "This is short. I am Dodge. Dr. Peterson is a bad guy ?-hehe something. Testing (A. B. C. E.) also. And another.";
+		SimpleTokenizer tokenizer = new SimpleTokenizer();
+		List<String> strs = tokenizer.getTokens(arg);
+		System.out.println(strs);
 	}
 }
