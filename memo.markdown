@@ -36,6 +36,15 @@ precision = 0.5476190476190477
 recall = 0.6764705882352942
 Score  = 605263.157894737
 ```
+* simple-vote k=4, StanfordToken, Union:
+```
+tp = 22
+fp = 20
+fn = 12
+precision = 0.5238095238095238
+recall = 0.6470588235294118
+Score  = 578947.3684210527
+```
 
 ## 4. combine `newpubmed_e12_13_bioc.xml` with `ncbi_train_bioc.xml`
 * simple-vote k=15, Union: 687718.81  (current best precision, might be useful later)
