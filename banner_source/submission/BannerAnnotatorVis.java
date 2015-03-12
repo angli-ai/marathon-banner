@@ -155,6 +155,9 @@ public class BannerAnnotatorVis {
         }
         double score = 1000000.0 * fmeasure;
 
+		System.out.println("mentionsNotFound");
+		System.out.println(mentionsNotFound);
+
         return score;
     }
 

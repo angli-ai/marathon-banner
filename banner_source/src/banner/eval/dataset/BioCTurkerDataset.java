@@ -106,13 +106,15 @@ public class BioCTurkerDataset extends Dataset {
 					} else {
 						int beginOffset = annotationOffset - sentenceOffset;
 						if (beginOffset + length > sentenceText.length()) {
+                            System.out.println("[sentence.breaker] paragraph = " + passage.getText());
                             System.out.println("[sentence.breaker] annotation id = " + annotationId + ", annotation text: " + text);
                             System.out.println("[sentence.breaker] sentenceText = " + sentenceText);
+                            System.out.println();
 							// skip this annotation
 
 							System.out.println("annotation removed due to two sentence spanning.");
 							annotationIterator.remove();
-							break;
+							continue;
 
 							// TODO: combine two sentences
 

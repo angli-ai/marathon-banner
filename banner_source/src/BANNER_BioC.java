@@ -4,7 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -38,6 +40,8 @@ import bioc.BioCLocation;
 import java.io.PrintWriter;
 import java.io.*;
 // ----------------------------------------------------------------
+
+import banner.util.BannerAnnotatorVis;
 
 public class BANNER_BioC {
 
@@ -126,26 +130,46 @@ public class BANNER_BioC {
         submission.println("static void init0() {");
         submission.println("a0 = new int[] {");
 		// ----------------------------------------------------------------
-				
+
+        List<BannerAnnotatorVis.EvalMention> mentions = new ArrayList<BannerAnnotatorVis.EvalMention>();
+        HashMap<Integer, BioCDocument> docmap = new HashMap<Integer, BioCDocument>();
 		while (connector.hasNext()) {
 			BioCDocument document = connector.next();
 			String documentId = document.getID();
 			System.out.println("ID=" + documentId);
+            docmap.put(Integer.parseInt(documentId), document);
 			for (BioCPassage passage : document.getPassages()) {
 				processPassage(documentId, passage);
 			}
 			writer.writeDocument(document);
-			System.out.println();
+//			System.out.println();
 
 		// ---------------- TopCoder submission generation ----------------
 			for (BioCPassage passage : document.getPassages()) {
 	            for (BioCAnnotation annotation : passage.getAnnotations()) {
 	            
 	                String str = document.getID();
+                    int sz = 0;
 	                for (BioCLocation loc : annotation.getLocations()) {
-	                    str += "," + loc.getOffset() + "," + loc.getLength() + ",";
+                        BannerAnnotatorVis.EvalMention mention = new BannerAnnotatorVis.EvalMention();
+                        int passageoffset = passage.getOffset();
+                        mention.ID = Integer.parseInt(document.getID());
+                        mention.offset = loc.getOffset();
+                        mention.len = loc.getLength();
+//                        System.out.println(passage.getText());
+//                        System.out.println(mention.ID + ", " + mention.offset + ", " + mention.len);
+                        mention.text = passage.getText().substring(mention.offset - passageoffset, mention.offset - passageoffset + mention.len);
+//                        System.out.println("annotation: " + mention.text);
+                        mention.passage = passage.getText();
+
+//                        if (mention.text.equals("VHL"))
+//                            continue;
+
+                        ++ sz;
+                        mentions.add(mention);
+                        str += "," + loc.getOffset() + "," + loc.getLength() + ",";
 	                }
-	                if (annotation.getLocations().size()>0) {
+	                if (sz>0) {
 		                submission.println(str);
 		                numItems++;
 		                if ((numItems%1000)==0) {
@@ -186,6 +210,39 @@ public class BANNER_BioC {
 		submission.flush();
         submission.close();
 		// ----------------------------------------------------------------
+
+        // do analysis
+        BannerAnnotatorVis tester = new BannerAnnotatorVis();
+        try {
+            tester.setup();
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
+        tester.forward(mentions);
+        for (BannerAnnotatorVis.EvalMention m : tester.mentionsNotFound) {
+            // false negative
+            System.out.println("[false negative] passage:");
+            BioCDocument doc = docmap.get(m.ID);
+            BioCPassage pas = null;
+            for (BioCPassage passage : doc.getPassages()) {
+                if (passage.getOffset() <= m.offset
+                    && m.offset - passage.getOffset() + m.len <= passage.getText().length()) {
+                    pas = passage;
+                    break;
+                }
+            }
+            System.out.println(pas.getText());
+            System.out.println("[false negative] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
+            System.out.println(pas.getText().substring(m.offset - pas.getOffset(), m.offset - pas.getOffset() + m.len));
+        }
+
+        for (BannerAnnotatorVis.EvalMention m : tester.mentionsFalsePos) {
+            // false positive
+            System.out.println("[false positive] passage:");
+            System.out.println(m.passage);
+            System.out.println("[false positive] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
+            System.out.println(m.text);
+        }
 	}
 
 	private void processPassage(String documentId, BioCPassage passage) {
@@ -201,7 +258,7 @@ public class BANNER_BioC {
 		}
 
 		// Process the passage text
-		System.out.println("Text=" + passage.getText());
+//		System.out.println("Text=" + passage.getText());
 		breaker.setText(passage.getText());
 		int offset = passage.getOffset();
 		List<String> sentences = breaker.getSentences();

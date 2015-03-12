@@ -268,7 +268,7 @@ public class Sentence
 
 	public enum OverlapOption
 	{
-		Exception, Union, Intersection, LayerInsideOut, LayerOutsideIn, LeftToRight, AsSet, Raw;
+		Exception, RemoveDuplicate, Union, Intersection, LayerInsideOut, LayerOutsideIn, LeftToRight, AsSet, Raw;
 	}
 
 	public List<String> getTokenLabels(TagFormat format, Set<MentionType> mentionTypes, OverlapOption sameType, OverlapOption differentType)
@@ -289,6 +289,47 @@ public class Sentence
 					throw new IllegalArgumentException("Sentence " + sentenceId + " contains overlapping mentions");
 			}
 		}
+        else if (sameType.equals(OverlapOption.RemoveDuplicate))
+        { // remove only duplicate mentions
+            if (!differentType.equals(OverlapOption.Exception))
+                throw new IllegalArgumentException("Not implemented");
+            Sentence disjoint = copy(true, true);
+            Set<Mention> handledMentions = new HashSet<Mention>();
+            Set<Mention> unhandledMentions = new HashSet<Mention>(disjoint.mentions);
+            while (unhandledMentions.size() > 0)
+            {
+                // Get an unhandled mention
+                Mention mention = unhandledMentions.iterator().next();
+                handledMentions.add(mention);
+                if (mentionTypes.contains(mention.getMentionType()))
+                {
+                    // Get all overlapping mentions with the same entity type
+//					Set<Mention> overlapping = new HashSet<Mention>();
+                    List<Mention> duplicate = new ArrayList<Mention>(); // added previous modifications
+                    boolean isDuplicate = false;
+                    for (Mention mention2 : disjoint.mentions)
+                        if (mention.equals(mention2) && mention.getEntityType().equals(mention2.getEntityType())) {
+                            isDuplicate = true;
+                            duplicate.add(mention2);
+                        }
+                    for (Mention mention2 : duplicate)
+                        disjoint.removeMention(mention2);
+                }
+                // Get list of unhandled mentions
+//                unhandledMentions = new HashSet<Mention>(union.getMentions());
+//                unhandledMentions.removeAll(handledMentions);
+            }
+            for (int i = 0; i < tokens.size(); i++)
+            {
+                List<Mention> tokenMentions = disjoint.getMentions(disjoint.tokens.get(i), mentionTypes);
+                if (tokenMentions.size() == 0)
+                    labels.add(TagPosition.O.name());
+                else if (tokenMentions.size() == 1)
+                    labels.add(TagPosition.getPositionText(format, tokenMentions.get(0), i));
+                else
+                    throw new IllegalArgumentException("Sentence " + sentenceId + " contains overlapping mentions");
+            }
+        }
 		else if (sameType.equals(OverlapOption.Union))
 		{
 			if (!differentType.equals(OverlapOption.Exception))
@@ -299,12 +340,13 @@ public class Sentence
 			while (unhandledMentions.size() > 0)
 			{
 				// Get an unhandled mention
-				Mention mention = unhandledMentions.iterator().next();
+				Mention mention = unhandledMentions.iterator().next(); // begin()?
 				handledMentions.add(mention);
 				if (mentionTypes.contains(mention.getMentionType()))
 				{
 					// Get all overlapping mentions with the same entity type
-					Set<Mention> overlapping = new HashSet<Mention>();
+//					Set<Mention> overlapping = new HashSet<Mention>();
+                    List<Mention> overlapping = new ArrayList<Mention>(); // added previous modifications
 					for (Mention mention2 : union.mentions)
 						if (mention.overlaps(mention2) && mention.getEntityType().equals(mention2.getEntityType()))
 							overlapping.add(mention2);
@@ -325,7 +367,7 @@ public class Sentence
 				}
 				// Get list of unhandled mentions
 				unhandledMentions = new HashSet<Mention>(union.getMentions());
-				unhandledMentions.removeAll(handledMentions);
+				unhandledMentions.removeAll(handledMentions); // there is a bug here!??
 			}
 			for (int i = 0; i < tokens.size(); i++)
 			{
