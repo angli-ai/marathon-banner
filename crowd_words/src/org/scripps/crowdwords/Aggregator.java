@@ -87,7 +87,7 @@ public class Aggregator {
 		
 		return expList;
 	}
-	
+
 	//Get "Trust" Score for each turker based off f-score performance for each turker against gold-standard documents
 	
 	public Map<Integer, Double> getAnnotatorTrust(List<Annotation> annoList, List<Annotation> goldList){

@@ -46,75 +46,7 @@ public class TestAggregation {
 		//null;
 		String k_dir = "data/mturk/ncbitrain_e11_voting/";
 		//"data/mturk/newpubmed_e12_13_voting/";//
-
-		executeVotingExperimentAng(mturkfile, goldfile, k_dir);
-	}
-
-	public static void executeVotingExperimentAng(String mturkfile, String goldfile, String k_dir) throws XMLStreamException, IOException{
-
-		mturkfile = "data/mturk/newpubmed_e12_13_bioc.xml";
-		goldfile = "data/ncbi/ncbi_train_bioc.xml";
-		k_dir = "data/mturk/newpubmed_e12_13_voting/";
-
-		if(goldfile==null){
-			System.out.println("No gold standard, just exporting voting results.");
-		}else{
-			System.out.println("Exporting voting results and evaluating each against gold standard");
-		}
-		AnnotationComparison ac = new AnnotationComparison();
-
-
-		BioCCollection gold_collection = null;
-		List<Annotation> gold_annos = null;
-		gold_collection = readBioC(goldfile);
-		gold_annos = convertBioCtoAnnotationList(gold_collection);
-
-		//read in the mturk annotations
-		BioCCollection mturk_collection = readBioC(mturkfile);
-//		for (BioCDocument doc : gold_collection) {
-//			mturk_collection.addDocument(doc);
-//		}
-		//get the full text for export later
-		Map<String, Document> id_doc = convertBioCCollectionToDocMap(mturk_collection);
-//		Map<String, Document> id_doc_expert = convertBioCCollectionToDocMap(gold_collection);
-		for(BioCDocument biodoc : gold_collection.getDocuments()){
-			Integer pmid = Integer.parseInt(biodoc.getID());
-			Document doc = new Document();
-			doc.setId(pmid);
-			for(BioCPassage passage : biodoc.getPassages()){
-				String type = passage.getInfon("type");
-				if(type.equals("abstract")){
-					doc.setText(passage.getText());
-				}else if(type.equals("title")){
-					doc.setTitle(passage.getText());
-				}
-			}
-			id_doc.put(pmid+"", doc);
-		}
-		//convert to local annotation representation
-		List<Annotation> mturk_annos = convertBioCtoAnnotationList(mturk_collection);
-
-		//build different k (voting) thresholds for annotations from turkers
-		Aggregator agg = new Aggregator();
-		Map<Integer, List<Annotation>> k_annos = agg.getAnnotationMapByK(mturk_annos, "loc");
-		for(Integer k=1; k < 50; k++){// : k_annos.keySet()){
-			List<Annotation> annos = k_annos.get(k);
-			if(goldfile!=null){
-				//execute comparison versus gold, report results
-				ComparisonReport report = ac.compareAnnosCorpusLevel(gold_annos, annos, "K="+k);
-				System.out.println(report.getHeader());
-				System.out.println("K="+k+"\t"+report.getRow());
-			}
-			BioCCollection k_collection = convertAnnotationsToBioC(annos, id_doc,"mturk k="+k,"",1000000);
-			writeBioC(k_collection, k_dir+"_"+k+".xml");
-			// combine this collection with gold collection
-			for (Annotation a : gold_annos) {
-				annos.add(a);
-			}
-			//export a BioC version for banner
-			k_collection = convertAnnotationsToBioC(annos, id_doc,"mturk k="+k,"",1000000);
-			writeBioC(k_collection, k_dir+"combined_"+k+".xml");
-		}
+		executeVotingExperiment(mturkfile, goldfile, k_dir);
 	}
 
 	public static void executeVotingExperiment(String mturkfile, String goldfile, String k_dir) throws XMLStreamException, IOException{
@@ -158,23 +90,16 @@ public class TestAggregation {
 		//build different k (voting) thresholds for annotations from turkers
 		Aggregator agg = new Aggregator();
 		Map<Integer, List<Annotation>> k_annos = agg.getAnnotationMapByK(mturk_annos, "loc");
-		for(Integer k=1; k < 50; k++){// : k_annos.keySet()){
+		for(Integer k=1; k < 16; k++){// : k_annos.keySet()){
 			List<Annotation> annos = k_annos.get(k);
 			if(goldfile!=null){
 				//execute comparison versus gold, report results
 				ComparisonReport report = ac.compareAnnosCorpusLevel(gold_annos, annos, "K="+k);
-				System.out.println(report.getHeader());
 				System.out.println("K="+k+"\t"+report.getRow());
 			}
-			BioCCollection k_collection = convertAnnotationsToBioC(annos, id_doc,"mturk k="+k,"",1000000);
-			writeBioC(k_collection, k_dir+"_"+k+".xml");
-			// combine this collection with gold collection
-			for (Annotation a : gold_annos) {
-				annos.add(a);
-			}
 			//export a BioC version for banner
-			k_collection = convertAnnotationsToBioC(annos, id_doc,"mturk k="+k,"",1000000);
-			writeBioC(k_collection, k_dir+"combined_"+k+".xml");
+			BioCCollection k_collection = convertAnnotationsToBioC(annos, id_doc,"mturk k="+k,"",1000000);
+			//writeBioC(k_collection, k_dir+"_"+k+".xml");
 		}
 	}
 	

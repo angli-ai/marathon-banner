@@ -11,7 +11,7 @@ public class Annotation implements Comparable{
 	private int id; private int kind; private String type; private String text; private int start; private int stop; private Timestamp created;
 	private int user_id; private int document_id; private int section_id; int concept_id; private String user_agent; private String player_ip;
 	private int experiment; private String document_section; private int k; private String gm_compare; private List<String> annotators;
-	private String identity_sig;
+	private String identity_sig; private double trust = 0;
 
 
 	public static String getHeaderForOutputTable(){
@@ -161,6 +161,10 @@ public class Annotation implements Comparable{
 	public void setAnnotators(List<String> annotators) {
 		this.annotators = annotators;
 	}
+
+    public Double getTrust() { return trust; }
+
+    public void setTrust(double trust) { this.trust = trust; }
 
 	public int getK() {
 		return k;
