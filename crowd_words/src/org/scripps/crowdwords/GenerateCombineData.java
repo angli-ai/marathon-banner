@@ -152,7 +152,9 @@ public class GenerateCombineData {
         Aggregator agg = new Aggregator();
         Map<Integer, List<Annotation>> k_annos = agg.getAnnotationMapByK(mturk_annos, "loc");
 
-        recomputeTrust(mturk_annos, trustScores, 0.9, false, false);
+		List<Annotation> reduced_annos = k_annos.get(1);
+
+        recomputeTrust(reduced_annos, trustScores, 0.9, false, false);
 
         // based on how many votes
         for (Integer k = 1; k < 10; k++) {// : k_annos.keySet()){
@@ -166,27 +168,35 @@ public class GenerateCombineData {
             BioCCollection k_collection = convertAnnotationsToBioC(annos, id_doc, "mturk k=" + k, "", 1000000);
             writeBioC(k_collection, outputdir + "mturk-K" + k + ".xml");
             // combine this collection with gold collection
+			List<Annotation> newannos = new ArrayList<Annotation>();
+			for (Annotation a : annos)
+				newannos.add(a);
             for (Annotation a : gold_annos) {
                 a.setTrust(10);
-                annos.add(a);
+                newannos.add(a);
             }
             //export a BioC version for banner
-            k_collection = convertAnnotationsToBioC(annos, id_doc, "mturk k=" + k, "", 1000000);
+            k_collection = convertAnnotationsToBioC(newannos, id_doc, "mturk k=" + k, "", 1000000);
             writeBioC(k_collection, outputdir + "combo-K" + k + ".xml");
         }
 
-        boolean useUnknownTurker = true;
+
+		boolean useUnknownTurker = true;
         boolean soft = false;
-        int K = 4;
-        for (double thresh = 0.5; thresh < 0.96; thresh += 0.05) {
-            recomputeTrust(mturk_annos, trustScores, thresh, soft, useUnknownTurker);
+        int K = 6;
+        for (double thresh = 0.5; thresh < 1; thresh += 0.05) {
+            recomputeTrust(reduced_annos, trustScores, thresh, soft, useUnknownTurker);
             String name = getConfigName(K, thresh, soft, useUnknownTurker);
+			System.out.println(name);
             List<Annotation> annos = new ArrayList<Annotation>();
-            for (Annotation anno : mturk_annos) {
+            for (Annotation anno : reduced_annos) {
                 if (anno.getTrust() >= K) {
                     annos.add(anno);
                 }
             }
+//			annos.add(mturk_annos.get(0));
+//			System.out.println(annos.get(0).getAnnotators());
+//			System.out.println(mturk_annos.get(0).getAnnotators());
             if (goldfile != null) {
                 //execute comparison versus gold, report results
                 ComparisonReport report = ac.compareAnnosCorpusLevel(gold_annos, annos, "thresh=" + String.format("%.2f", thresh));
@@ -208,13 +218,13 @@ public class GenerateCombineData {
     }
 
     public static String getConfigName(int K, double thresh, boolean soft, boolean useUnknownTurker) {
-        return String.format("K%d+trust%.2f+", K, thresh) + (soft ? "soft" : "hard") + (useUnknownTurker ? "+knownturks" : "+allturks");
+        return String.format("K%d+trust%.2f+", K, thresh) + (soft ? "soft" : "hard") + (useUnknownTurker ? "+allturks" : "+knownturks");
     }
 
     public static void recomputeTrust(List<Annotation> annos, Map<Integer, Double> trustScores, double trustThreshold, boolean soft, boolean useUnknownTurkers) {
         // calculate trust scores for each annotation
-        double scoreThreshold = 0.9;
-        boolean useUnknownTurker = false;
+//        double scoreThreshold = 0.9;
+//        boolean useUnknownTurker = false;
         for (Annotation anno : annos) {
             double trust = 0;
             for (String annotator : anno.getAnnotators()) {
@@ -227,11 +237,11 @@ public class GenerateCombineData {
                             trust += 1;
                     }
                 } else {
-                    if (useUnknownTurker) {
+                    if (useUnknownTurkers) {
                         if (soft)
                             trust += 0.5;
                         else
-                            trust += 0.5;
+                            trust += 1;
                     }
                 }
             }
@@ -368,7 +378,7 @@ public class GenerateCombineData {
 					loc.setOffset(start);					
 					biocAnno.addLocation(loc);
 					biocAnno.setText(anno.getText());
-                    biocAnno.putInfon("trust", anno.getTrust().toString());
+//                    biocAnno.putInfon("trust", anno.getTrust().toString());
 					//if multiple annotator..
 					if(anno.getUser_id()==0){
 						if(annospecific_workers!=null){
