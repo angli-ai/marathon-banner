@@ -17,7 +17,7 @@ public class BannerAnnotatorVis {
 
     static public class EvalMention {
         public int ID, offset, len;
-        public String text, passage;
+//        public String text, passage;
         public boolean overlaps(EvalMention mention2)
         {
             return ID==mention2.ID && offset+len > mention2.offset && offset < mention2.offset+mention2.len;
@@ -59,7 +59,7 @@ public class BannerAnnotatorVis {
     public void setup() throws  Exception {
         // load linking file
         {
-            BufferedReader br = new BufferedReader(new FileReader("example_data_link.csv"));
+            BufferedReader br = new BufferedReader(new FileReader("submission/example_data_link.csv"));
             while (true)
             {
                 String s = br.readLine();
@@ -78,7 +78,7 @@ public class BannerAnnotatorVis {
         gtfMentions.clear();
         // load gtf file
         {
-            BufferedReader br = new BufferedReader(new FileReader("example_gtf.csv"));
+            BufferedReader br = new BufferedReader(new FileReader("submission/example_gtf.csv"));
             while (true)
             {
                 String s = br.readLine();
