@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<banner-configuration>
+  <banner>
+    <eval>
+      <datasetName>banner.eval.dataset.BioCDataset</datasetName>
+      <dataset>
+        <filename>data/ncbi_train_bioc.xml</filename>
+        <foldType>Disease</foldType>
+      </dataset>
+      <idInputFilename>output/ncbi_train_bioc/union-simpletoken-crf1/ids.txt</idInputFilename>
+      <rawInputFilename>output/ncbi_train_bioc/union-simpletoken-crf1/raw.txt</rawInputFilename>
+      <trainingInputFilename>output/ncbi_train_bioc/union-simpletoken-crf1/train.txt</trainingInputFilename>
+      <outputFilename>output/ncbi_train_bioc/union-simpletoken-crf1/output.txt</outputFilename>
+      <inContextAnalysisFilename>output/ncbi_train_bioc/union-simpletoken-crf1/contextAnalysis.html</inContextAnalysisFilename>
+      <mentionFilename>output/ncbi_train_bioc/union-simpletoken-crf1/mention.txt</mentionFilename>
+      <modelFilename>output/ncbi_train_bioc/union-simpletoken-crf1/model_bioc_TRAIN.bin</modelFilename>
+      <lemmatiserDataDirectory>nlpdata/lemmatiser</lemmatiserDataDirectory>
+      <posTaggerDataDirectory>nlpdata/tagger</posTaggerDataDirectory>
+      <posTagger>dragon.nlp.tool.HeppleTagger</posTagger>
+      <tokenizer>banner.tokenization.SimpleTokenizer</tokenizer>
+      <useParenthesisPostProcessing>true</useParenthesisPostProcessing>
+      <useLocalAbbreviationPostProcessing>true</useLocalAbbreviationPostProcessing>
+      <useNumericNormalization>true</useNumericNormalization>
+      <tagFormat>IOB</tagFormat>
+      <crfOrder>1</crfOrder>
+      <textDirection>Forward</textDirection>
+      <mentionTypes>Required</mentionTypes>
+      <sameTypeOverlapOption>Union</sameTypeOverlapOption>
+      <differentTypeOverlapOption>Exception</differentTypeOverlapOption>
+    </eval>
+  </banner>
+</banner-configuration>
