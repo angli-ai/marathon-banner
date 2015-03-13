@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<banner-configuration>
+  <banner>
+    <eval>
+      <datasetName>banner.eval.dataset.BioCTurkerDataset</datasetName>
+      <dataset>
+		  <filename>data/combo-K3+trust0.85+hard+allturks.xml</filename>
+        <foldType>Disease</foldType>
+      </dataset>
+	  <idInputFilename>output/combo-K3+trust0.85+hard+allturks/union/ids.txt</idInputFilename>
+	  <rawInputFilename>output/combo-K3+trust0.85+hard+allturks/union/raw.txt</rawInputFilename>
+	  <trainingInputFilename>output/combo-K3+trust0.85+hard+allturks/union/train.txt</trainingInputFilename>
+	  <outputFilename>output/combo-K3+trust0.85+hard+allturks/union/output.txt</outputFilename>
+	  <inContextAnalysisFilename>output/combo-K3+trust0.85+hard+allturks/union/contextAnalysis.html</inContextAnalysisFilename>
+	  <mentionFilename>output/combo-K3+trust0.85+hard+allturks/union/mention.txt</mentionFilename>
+	  <modelFilename>output/combo-K3+trust0.85+hard+allturks/union/model_bioc_TRAIN.bin</modelFilename>
+      <lemmatiserDataDirectory>nlpdata/lemmatiser</lemmatiserDataDirectory>
+      <posTaggerDataDirectory>nlpdata/tagger</posTaggerDataDirectory>
+      <posTagger>dragon.nlp.tool.HeppleTagger</posTagger>
+      <tokenizer>banner.tokenization.SimpleTokenizer</tokenizer>
+      <useParenthesisPostProcessing>true</useParenthesisPostProcessing>
+      <useLocalAbbreviationPostProcessing>true</useLocalAbbreviationPostProcessing>
+      <useNumericNormalization>true</useNumericNormalization>
+      <tagFormat>IOB</tagFormat>
+      <crfOrder>1</crfOrder>
+      <textDirection>Forward</textDirection>
+      <mentionTypes>Required</mentionTypes>
+      <sameTypeOverlapOption>Union</sameTypeOverlapOption>
+      <differentTypeOverlapOption>Exception</differentTypeOverlapOption>
+    </eval>
+  </banner>
+</banner-configuration>
