@@ -158,9 +158,9 @@ public class BANNER_BioC {
                         mention.len = loc.getLength();
 //                        System.out.println(passage.getText());
 //                        System.out.println(mention.ID + ", " + mention.offset + ", " + mention.len);
-                        mention.text = passage.getText().substring(mention.offset - passageoffset, mention.offset - passageoffset + mention.len);
+//                        mention.text = passage.getText().substring(mention.offset - passageoffset, mention.offset - passageoffset + mention.len);
 //                        System.out.println("annotation: " + mention.text);
-                        mention.passage = passage.getText();
+//                        mention.passage = passage.getText();
 
 //                        if (mention.text.equals("VHL"))
 //                            continue;
@@ -239,9 +239,23 @@ public class BANNER_BioC {
         for (BannerAnnotatorVis.EvalMention m : tester.mentionsFalsePos) {
             // false positive
             System.out.println("[false positive] passage:");
-            System.out.println(m.passage);
-            System.out.println("[false positive] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
-            System.out.println(m.text);
+
+			BioCDocument doc = docmap.get(m.ID);
+			BioCPassage pas = null;
+			for (BioCPassage passage : doc.getPassages()) {
+				if (passage.getOffset() <= m.offset
+						&& m.offset - passage.getOffset() + m.len <= passage.getText().length()) {
+					pas = passage;
+					break;
+				}
+			}
+			System.out.println(pas.getText());
+			System.out.println("[false positive] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
+			System.out.println(pas.getText().substring(m.offset - pas.getOffset(), m.offset - pas.getOffset() + m.len));
+
+//            System.out.println(m.passage);
+//            System.out.println("[false positive] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
+//            System.out.println(m.text);
         }
 	}
 
