@@ -21,16 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import banner.postprocessing.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 
 import banner.eval.dataset.Dataset;
-import banner.postprocessing.FlattenPostProcessor;
-import banner.postprocessing.LocalAbbreviationPostProcessor;
-import banner.postprocessing.ParenthesisPostProcessor;
-import banner.postprocessing.PostProcessor;
-import banner.postprocessing.SequentialPostProcessor;
 import banner.postprocessing.FlattenPostProcessor.FlattenType;
 import banner.tagging.CRFTagger;
 import banner.tagging.FeatureSet;
@@ -948,12 +944,16 @@ public class BANNER {
 		// Guaranteed not to be null
 		HierarchicalConfiguration localConfig = config.configurationAt(BANNER.class.getPackage().getName());
 		SequentialPostProcessor postProcessor = new SequentialPostProcessor();
+//		postProcessor.addPostProcessor(new OneSensePerDiscoursePostProcessor());
+		postProcessor.addPostProcessor(new FirstPostProcessor());
+		postProcessor.addPostProcessor(new FlattenPostProcessor(FlattenType.Union));
 		if (localConfig.containsKey("useParenthesisPostProcessing"))
 			if (localConfig.getBoolean("useParenthesisPostProcessing"))
 				postProcessor.addPostProcessor(new ParenthesisPostProcessor());
 		if (localConfig.containsKey("useLocalAbbreviationPostProcessing"))
 			if (localConfig.getBoolean("useLocalAbbreviationPostProcessing"))
 				postProcessor.addPostProcessor(new LocalAbbreviationPostProcessor());
+		postProcessor.addPostProcessor(new RemoveAbbrevPostProcessor());
 		return postProcessor;
 	}
 

@@ -182,9 +182,9 @@ public class GenerateCombineData {
 
 
 		boolean useUnknownTurker = true;
-        boolean soft = false;
-        int K = 6;
-        for (double thresh = 0.5; thresh < 1; thresh += 0.05) {
+        boolean soft = true;
+        int K = 4;
+        for (double thresh = 0.1; thresh < 1; thresh += 0.05) {
             recomputeTrust(reduced_annos, trustScores, thresh, soft, useUnknownTurker);
             String name = getConfigName(K, thresh, soft, useUnknownTurker);
 			System.out.println(name);
@@ -231,7 +231,8 @@ public class GenerateCombineData {
                 int id = Integer.parseInt(annotator);
                 if (trustScores.containsKey(id)) {
                     if (soft) {
-                        trust += trustScores.get(id);
+						if (trustScores.get(id) > trustThreshold)
+                        	trust += trustScores.get(id);
                     } else {
                         if (trustScores.get(id) > trustThreshold)
                             trust += 1;

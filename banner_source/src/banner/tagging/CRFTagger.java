@@ -125,7 +125,7 @@ public class CRFTagger implements Tagger
 		// TODO Test CRFTrainerByL1LabelLiklihood & CRFTrainerByStochasticGradient; make configurable
 		// Train on data subsets
 		// TODO Make this configurable
-		// crfTrainer.train(instances, 10, new double[] {0.2, 0.4, 0.6, 0.8});
+//		crfTrainer.train(instances, 10, new double[] {0.2, 0.4, 0.6, 0.8});
 		crfTrainer.train(instances, 10, new double[] { 0.2, 0.5, 0.8 });
 		// Train to convergence
 		// crfTrainer.train(instances, 70);

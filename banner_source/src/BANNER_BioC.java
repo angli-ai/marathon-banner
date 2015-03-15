@@ -136,7 +136,7 @@ public class BANNER_BioC {
 		while (connector.hasNext()) {
 			BioCDocument document = connector.next();
 			String documentId = document.getID();
-			System.out.println("ID=" + documentId);
+//			System.out.println("ID=" + documentId);
             docmap.put(Integer.parseInt(documentId), document);
 			for (BioCPassage passage : document.getPassages()) {
 				processPassage(documentId, passage);
@@ -216,9 +216,30 @@ public class BANNER_BioC {
         try {
             tester.setup();
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+			e.printStackTrace();;
+			return;
         }
         tester.forward(mentions);
+
+		for (BannerAnnotatorVis.EvalMention m : tester.mentionsFound) {
+			// false negative
+			System.out.println("[true positive] passage:");
+			BioCDocument doc = docmap.get(m.ID);
+			BioCPassage pas = null;
+			for (BioCPassage passage : doc.getPassages()) {
+				if (passage.getOffset() <= m.offset
+						&& m.offset - passage.getOffset() + m.len <= passage.getText().length()) {
+					pas = passage;
+					break;
+				}
+			}
+			System.out.println(pas.getText());
+			System.out.println("[true positive] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
+			System.out.println(pas.getText().substring(m.offset - pas.getOffset(), m.offset - pas.getOffset() + m.len));
+		}
+
+		System.out.println();;
+
         for (BannerAnnotatorVis.EvalMention m : tester.mentionsNotFound) {
             // false negative
             System.out.println("[false negative] passage:");
@@ -235,6 +256,7 @@ public class BANNER_BioC {
             System.out.println("[false negative] mention: (" + m.ID + ", " + m.offset + ", " + m.len + ")");
             System.out.println(pas.getText().substring(m.offset - pas.getOffset(), m.offset - pas.getOffset() + m.len));
         }
+		System.out.println();
 
         for (BannerAnnotatorVis.EvalMention m : tester.mentionsFalsePos) {
             // false positive

@@ -102,6 +102,8 @@ public class BannerAnnotatorVis {
 
     public Set<EvalMention> mentionsNotFound;
     public Set<EvalMention> mentionsFalsePos;
+    public Set<EvalMention> mentionsFound;
+
     public double forward(List<EvalMention> inputMentions) {
         List<EvalMention> answerMentions = new ArrayList<EvalMention>();
         for (EvalMention m : inputMentions) {
@@ -120,6 +122,7 @@ public class BannerAnnotatorVis {
         int fp = 0;
         int fn = 0;
         mentionsFalsePos = new HashSet<EvalMention>();
+        mentionsFound = new HashSet<EvalMention>();
         mentionsNotFound = new HashSet<EvalMention>(gtfMentions);
         for (EvalMention mFound : answerMentions) {
             boolean found = false;
@@ -136,6 +139,8 @@ public class BannerAnnotatorVis {
                     }
                 }
             }
+            if (found)
+                mentionsFound.add(mFound);
             if (!found) {
                 mentionsFalsePos.add(mFound);
                 fp++;
@@ -156,6 +161,7 @@ public class BannerAnnotatorVis {
             fmeasure = 2.0 * precision * recall / (precision + recall);
         }
         double score = 1000000.0 * fmeasure;
+        System.out.println("fmeasure = " + fmeasure);
 
         return score;
     }
