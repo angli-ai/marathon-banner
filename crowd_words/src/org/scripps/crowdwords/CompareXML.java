@@ -12,6 +12,8 @@ import java.util.*;
 
 import javax.xml.stream.XMLStreamException;
 
+import banner.tokenization.SimpleTokenizer;
+import banner.types.*;
 import bioc.BioCAnnotation;
 import bioc.BioCCollection;
 import bioc.BioCDocument;
@@ -34,7 +36,7 @@ public class CompareXML {
      */
     public static void main(String[] args) throws XMLStreamException, IOException {
         //
-        String resultfile = "/Users/ang/workspace/topcoder-banner/marathon-banner/banner_source/out-ncbi.xml";
+        String resultfile = "/Users/ang/workspace/topcoder-banner/marathon-banner/banner_source/out-ncbi-no-post-process.xml";
         String goldfile = "data/ncbi/ncbi_train_bioc.xml";
 //        String goldfile = "data/mturk/newpubmed_e12_13_bioc.xml";
 
@@ -46,6 +48,7 @@ public class CompareXML {
         filename = "data/ncbi-fp.txt";
 
         Set<String> fp = compareResults(resultfile, goldfile);
+//        fp = load_fp(filename);
 
         write(fp, filename);
 
@@ -60,6 +63,21 @@ public class CompareXML {
             }
         }
         System.out.println("possible improve = " + count);
+    }
+
+    public static Set<String> load_fp(String filename) {
+        Set<String> fp = new HashSet<String>();
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(filename));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (sc.hasNextLine()) {
+            fp.add(sc.nextLine());
+        }
+        System.out.println("#" + fp.size() + " fp = " + Arrays.toString(fp.toArray()));
+        return fp;
     }
 
     public static List<Annotation> convertBioCtoAnnotationListRes(BioCCollection biocCollection){
@@ -102,6 +120,42 @@ public class CompareXML {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Map<String, Integer> countTermOccurrence(Set<String> wordset, BioCCollection biocCollection) {
+        Map<String, Integer> res = new HashMap<String, Integer>();
+        for (String word : wordset) {
+            res.put(word, 0);
+        }
+        SimpleTokenizer tokenizer = new SimpleTokenizer();
+        for(BioCDocument doc : biocCollection.getDocuments()) {
+            Integer pmid = Integer.parseInt(doc.getID());
+            for (BioCPassage passage : doc.getPassages()) {
+                String str = passage.getText();
+
+                for (String word : wordset) {
+                    int lastIndex = 0;
+                    int count = 0;
+
+                    while (lastIndex != -1) {
+
+                        lastIndex = str.indexOf(" " + word + " ", lastIndex);
+
+                        if (lastIndex != -1) {
+                            count++;
+                            lastIndex += word.length();
+                        }
+                    }
+
+                    if (count > 0) {
+                        int cnt = res.get(word);
+                        res.put(word, cnt + 1);
+                    }
+
+                }
+            }
+        }
+        return res;
     }
 
     public static Set<String> compareResults(String mturkfile, String goldfile) throws XMLStreamException, IOException{
@@ -153,14 +207,22 @@ public class CompareXML {
             Set<String> falsepos = new HashSet<String>();
             Map<String, Integer> map = report.getFP_String_Count();
             for (String key : map.keySet()) {
-                if (map.get(key) > 1)
+                if (map.get(key) >= 1)
                     falsepos.add(key);
             }
             for (Annotation anno: gold_annos) {
                 falsepos.remove(anno.getText());
             }
             System.out.println("size = " + falsepos.size());
+            // count term occurrence
+            Map<String, Integer> termcount = countTermOccurrence(falsepos, gold_collection);
+            for (String term : termcount.keySet()) {
+                if (termcount.get(term) == 1)
+                    falsepos.remove(term);
+            }
+            System.out.println("num = " + falsepos.size());
             System.out.println(falsepos);
+            System.out.println(termcount);
             return falsepos;
         }
 

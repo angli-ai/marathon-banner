@@ -954,6 +954,7 @@ public class BANNER {
 			if (localConfig.getBoolean("useLocalAbbreviationPostProcessing"))
 				postProcessor.addPostProcessor(new LocalAbbreviationPostProcessor());
 		postProcessor.addPostProcessor(new RemoveAbbrevPostProcessor());
+//		postProcessor = new SequentialPostProcessor();
 		return postProcessor;
 	}
 

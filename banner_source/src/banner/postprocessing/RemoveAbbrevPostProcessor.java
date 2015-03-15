@@ -21,6 +21,8 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
     /**
      * Creates a new instance of {@link ParenthesisPostProcessor}
      */
+    Set<String> endaccept = new HashSet<String>();
+
     public RemoveAbbrevPostProcessor()
     {
         // Empty
@@ -37,6 +39,10 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
             fp.add(sc.nextLine());
         }
         System.out.print("fp = " + Arrays.toString(fp.toArray()));
+
+        endaccept.add("syndrome");
+        endaccept.add("disease");
+        endaccept.add("cancer");
     }
 
     private Set<String> fp = new HashSet<String>();
@@ -71,6 +77,8 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
     public void final_filtering(Sentence sentence) {
         List<Mention> mentions = new ArrayList<Mention>(sentence.getMentions());
         for (Mention m : mentions) {
+            if (endaccept.contains(sentence.getTokens().get(m.getEnd()-1).getText().toLowerCase()))
+                continue;
             if (fp.contains(m.getText())) {
                 System.out.println("sentence #" + sentence.getSentenceId() + " false positive removed : " + m.getText()  + " sentence = " + sentence.getText());
                 sentence.removeMention(m);
@@ -109,9 +117,7 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
         adjsuffix_remove.add("suppressor");
         adjsuffix_remove.add("linked");
 
-        Set<String> endaccept = new HashSet<String>();
-        endaccept.add("syndrome");
-        endaccept.add("disease");
+
 
         Set<String> definiteNonDisease = new HashSet<String>();
         definiteNonDisease.add("gene");
@@ -124,8 +130,8 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
             int start = mention.getStart();
             int end = mention.getEnd();
 
-            if (end - start >= 2 && tokens.get(end - 2).getText().equals("-") && tokens.get(end - 1).getText().charAt(0) <= 'z' && tokens.get(end - 1).getText().charAt(0) >= 'a')
-                System.out.println("sentence #" + sentence.getSentenceId() + " adj. suffix found : " + mention.getText()  + " sentence = " + sentence.getText());
+//            if (end - start >= 2 && tokens.get(end - 2).getText().equals("-") && tokens.get(end - 1).getText().charAt(0) <= 'z' && tokens.get(end - 1).getText().charAt(0) >= 'a')
+//                System.out.println("sentence #" + sentence.getSentenceId() + " adj. suffix found : " + mention.getText()  + " sentence = " + sentence.getText());
 
             // remove tokens with suffix '-Adj', this should not be removed. should remove suffix otherwise.
             if (end - start >= 2 && tokens.get(end-2).getText().equals("-") && adjsuffix_remove.contains(tokens.get(end-1).getText())) {
