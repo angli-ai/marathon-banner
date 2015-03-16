@@ -52,7 +52,7 @@ public class CompareXML {
 
         write(fp, filename);
 
-        resultfile = "/Users/ang/workspace/topcoder-banner/marathon-banner/banner_source/out.xml";
+        resultfile = "/Users/ang/workspace/topcoder-banner/marathon-banner/banner_source/out-ncbi-results.xml";
 //        resultfile = "/Users/ang/workspace/topcoder-banner/marathon-banner/banner_source/out-combo-K1.xml";
         BioCCollection rescollection = TestAggregation.readBioC(resultfile);
         List<Annotation> annos = convertBioCtoAnnotationListRes(rescollection);
@@ -139,10 +139,12 @@ public class CompareXML {
 
                     while (lastIndex != -1) {
 
-                        lastIndex = str.indexOf(" " + word + " ", lastIndex);
+                        lastIndex = str.indexOf(word, lastIndex);
 
                         if (lastIndex != -1) {
-                            count++;
+                            if ((lastIndex == 0 || str.charAt(lastIndex - 1) == ' ') &&
+                                    (lastIndex + word.length() < str.length() || str.charAt(lastIndex + word.length()) == ' '))
+                                count++;
                             lastIndex += word.length();
                         }
                     }
@@ -217,7 +219,7 @@ public class CompareXML {
             // count term occurrence
             Map<String, Integer> termcount = countTermOccurrence(falsepos, gold_collection);
             for (String term : termcount.keySet()) {
-                if (termcount.get(term) == 1)
+                if (termcount.get(term) <= 1 || term.length() <= 2) // avoid too short abbrev
                     falsepos.remove(term);
             }
             System.out.println("num = " + falsepos.size());

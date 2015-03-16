@@ -13,6 +13,7 @@ import banner.types.EntityType;
 import banner.types.Mention;
 import banner.types.Sentence;
 import banner.types.Token;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 /**
  * Created by ang on 3/14/15.
@@ -22,6 +23,7 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
      * Creates a new instance of {@link ParenthesisPostProcessor}
      */
     Set<String> endaccept = new HashSet<String>();
+    Set<String> definiteNonDisease = new HashSet<String>();
 
     public RemoveAbbrevPostProcessor()
     {
@@ -40,9 +42,34 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
         }
         System.out.print("fp = " + Arrays.toString(fp.toArray()));
 
+
+        definiteNonDisease.add("gene");
+        definiteNonDisease.add("virus");
+        definiteNonDisease.add("protein");
+//        for (String word : fp) {
+//            if (word.indexOf(" ") == -1 && word.indexOf("-") == -1) {
+//                System.out.println("Non-disease keywords added [" + word + "]");
+//                definiteNonDisease.add(word);
+//                if (word.charAt(word.length() - 1) != 's') {
+//                    System.out.println("Non-disease keywords added [" + word + "s]");
+//                    definiteNonDisease.add(word + "s");
+//                }
+//            }
+//        }
+
+        // add plural forms into the false positive word set
+        for (String word : new HashSet<String>(fp)) {
+            if (word.indexOf(" ") == -1 && word.indexOf("-") == -1 && word.charAt(word.length() - 1) != 's') {
+                fp.add(word + "s");
+            }
+        }
+
         endaccept.add("syndrome");
+        endaccept.add("syndromes");
         endaccept.add("disease");
+        endaccept.add("diseases");
         endaccept.add("cancer");
+        endaccept.add("cancers");
     }
 
     private Set<String> fp = new HashSet<String>();
@@ -77,13 +104,24 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
     public void final_filtering(Sentence sentence) {
         List<Mention> mentions = new ArrayList<Mention>(sentence.getMentions());
         for (Mention m : mentions) {
-            if (endaccept.contains(sentence.getTokens().get(m.getEnd()-1).getText().toLowerCase()))
+            if (endaccept.contains(sentence.getTokens().get(m.getEnd() - 1).getText().toLowerCase()))
                 continue;
             if (fp.contains(m.getText())) {
                 System.out.println("sentence #" + sentence.getSentenceId() + " false positive removed : " + m.getText()  + " sentence = " + sentence.getText());
                 sentence.removeMention(m);
             }
         }
+    }
+
+    private static boolean isPunctuation(char ch)
+    {
+        return ("`~!@#$%^&*()-–=_+[]\\{}|;':\",./<>?".indexOf(ch) != -1);
+    }
+    private static boolean isPunctuation(String s) {
+        for (int i = 0; i < s.length(); ++ i)
+            if (!isPunctuation(s.charAt(i)))
+                return false;
+        return true;
     }
 
     // remove abbreviations that has no mentions immediately before them. and remove them for the rest of the paragraph.
@@ -118,18 +156,26 @@ public class RemoveAbbrevPostProcessor implements  PostProcessor {
         adjsuffix_remove.add("linked");
 
 
-
-        Set<String> definiteNonDisease = new HashSet<String>();
-        definiteNonDisease.add("gene");
-        definiteNonDisease.add("virus");
-        definiteNonDisease.add("protein");
-
-
         // dealing with cases where there exists suffix {'-', adj.}
         for (Mention mention : mentions) {
             int start = mention.getStart();
             int end = mention.getEnd();
 
+            // remove two sides punctuations
+            boolean changed = false;
+            while (start < end && isPunctuation(tokens.get(start).getText())) {
+                changed = true;
+                ++ start;
+            }
+            while (end > start && isPunctuation(tokens.get(end-1).getText())) {
+                changed = true;
+                -- end;
+            }
+            if (changed) {
+                sentence.removeMention(mention);
+                mention = new Mention(sentence, start, end, EntityType.getType("Disease"), Mention.MentionType.Found);
+                sentence.addMention(mention);
+            }
 //            if (end - start >= 2 && tokens.get(end - 2).getText().equals("-") && tokens.get(end - 1).getText().charAt(0) <= 'z' && tokens.get(end - 1).getText().charAt(0) >= 'a')
 //                System.out.println("sentence #" + sentence.getSentenceId() + " adj. suffix found : " + mention.getText()  + " sentence = " + sentence.getText());
 

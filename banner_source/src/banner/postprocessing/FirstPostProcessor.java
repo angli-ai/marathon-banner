@@ -72,18 +72,20 @@ public class FirstPostProcessor implements  PostProcessor {
         Set<String> adjsuffix = new HashSet<String>();
         adjsuffix.add("-");
         adjsuffix.add("associated");
-        adjsuffix.add("specific");
         adjsuffix.add("like");
         adjsuffix.add("related");
         adjsuffix.add("causing");
         adjsuffix.add("affected");
         adjsuffix.add("infected");
         adjsuffix.add("suppressor");
+//        adjsuffix.add("specific");
 //        adjsuffix.add("retarded");
 //        adjsuffix.add("patients");
 
         Set<String> adjprefix = new HashSet<String>();
         adjprefix.add("benign");
+        adjprefix.add("malignant");
+
         for (Mention mention : mentions)
         {
             int start = mention.getStart();
@@ -98,16 +100,18 @@ public class FirstPostProcessor implements  PostProcessor {
 //            }
 
             if (start > 1 && adjprefix.contains(tokens.get(start - 1).getText().toLowerCase())) {
-                System.out.println("sentence #" + sentence.getSentenceId() + " [missed prefix +] adjusted : " + mention.getText()  + " sentence = " + sentence.getText());
                 sentence.removeMention(mention);
-                sentence.addMention(new Mention(sentence, start - 1, end, EntityType.getType("Disease"), Mention.MentionType.Found));
+                Mention m = new Mention(sentence, start - 1, end, EntityType.getType("Disease"), Mention.MentionType.Found);
+                sentence.addMention(m);
+                System.out.println("sentence #" + sentence.getSentenceId() + " [missed prefix +] adjusted : from [" + mention.getText() + "] to [" + m.getText() + "] | sentence = " + sentence.getText());
                 continue;
             }
 
             if (start > 2 && tokens.get(start - 1).getText().equals("and") && adjsuffix.contains(tokens.get(start-2).getText())) {
-                System.out.println("sentence #" + sentence.getSentenceId() + " [xxx-/xxx-adj. and] adjusted : " + mention.getText()  + " sentence = " + sentence.getText());
                 sentence.removeMention(mention);
-                sentence.addMention(new Mention(sentence, start - 3, end, EntityType.getType("Disease"), Mention.MentionType.Found));
+                Mention m = new Mention(sentence, start - 3, end, EntityType.getType("Disease"), Mention.MentionType.Found);
+                sentence.addMention(m);
+                System.out.println("sentence #" + sentence.getSentenceId() + " [xxx-/xxx-adj. and] adjusted : from [" + mention.getText() + "] to [" + m.getText() + "] | sentence = " + sentence.getText());
                 continue;
             }
 
